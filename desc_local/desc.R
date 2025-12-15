@@ -6,12 +6,6 @@ pkg = c("dplyr", "ggplot2", "rgdal", "rgeos", "sp", "classInt",
 # Checks if they are installed, install if not
 if (length(setdiff(pkg, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(pkg, rownames(installed.packages())))}
-# muniSpain
-if(!"muniSpain" %in% rownames(installed.packages())){
-  if(!"devtools" %in% rownames(installed.packages())){install.packages("devtools")}
-  library(devtools)
-  install_github("franvillamil/muniSpain")
-}
 # Load
 invisible(lapply(c(pkg, "muniSpain"), library, character.only = TRUE))
 
