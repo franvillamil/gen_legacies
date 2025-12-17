@@ -20,6 +20,10 @@ taskflow:
 
 desc: $(out_desc)
 
+clean:
+	rm -rfv */output
+	rm -fv */*.Rout
+
 # ------------------------
 # Datasets
 
