@@ -2,8 +2,9 @@
 options(stringsAsFactors = FALSE)
 options("modelsummary_format_numeric_latex" = "plain")
 # List of packages
-pkg = c("dplyr", "modelsummary", "ggplot2", "kableExtra", "paletteer",
-  "broom", "stringr", "marginaleffects", "tidyr", "sandwich", "broom", "lmtest")
+pkg = c("dplyr", "modelsummary", "ggplot2", "tinytable", "paletteer",
+  "broom", "stringr", "marginaleffects", "tidyr", "sandwich",
+  "broom", "lmtest")
 # Checks if they are installed, install if not
 if (length(setdiff(pkg, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(pkg, rownames(installed.packages())))}
@@ -71,10 +72,8 @@ dv_label = recode(
       gsub("^(0|1)", "20\\1",
         gsub("^asoc_|_(p|pl)$", "", dv)))),
   "post75" = "Full")
-dv_header = rep(1, length(dv_label)+1)
-names(dv_header) = c(" ", dv_label)
-dv_header_double = c(1, dv_header[-1]*2)
-names(dv_header_double)[1] = " "
+dv_header = as.list(2:(length(dv_label)+1))
+names(dv_header) = dv_label
 
 # Models
 m_asoc = modnames(lapply(f_all, function(x) lm(x, data = data)))
@@ -92,12 +91,12 @@ modelsummary(
   coef_omit = "prov",
   gof_map = gs,
   title = "Francoist repression (TOP, binary version) and local associations formed after 1975\\label{tab:lm_asoc}",
+  notes = n,
   add_rows = as.data.frame(rbind(c("Province FE", rep("Yes", length(m_asoc))))),
   threeparttable = TRUE, escape = FALSE) %>%
-add_header_above(dv_header) %>%
-kable_styling(latex_options = c("scale_down", "hold_position")) %>%
-footnote(general = n, threeparttable = TRUE, footnote_as_chunk = TRUE, escape = FALSE) %>%
-save_kable(file = "analyses_local/output/tab_asoc.tex")
+group_tt(j = dv_header) %>%
+theme_tt("resize", direction = "down") %>%
+save_tt("analyses_local/output/tab_asoc.tex", overwrite = TRUE)
 
 # Base models (continuous measure)
 modelsummary(
@@ -109,14 +108,12 @@ modelsummary(
   coef_omit = "prov",
   gof_map = gs,
   title = "Francoist repression (TOP, continuous form) and local associations formed after 1975\\label{tab:lm_asoc_cont}",
-  add_rows = as.data.frame(rbind(c("Province FE", rep("Yes", length(m_asoc_cont))))),
+  notes = n,
+  add_rows = as.data.frame(rbind(c("Province FE", rep("Yes", length(m_asoc))))),
   threeparttable = TRUE, escape = FALSE) %>%
-add_header_above(dv_header) %>%
-kable_styling(latex_options = c("scale_down", "hold_position")) %>%
-footnote(general = paste(n, n_cont), threeparttable = TRUE,
-  footnote_as_chunk = TRUE, escape = FALSE) %>%
-save_kable(file = "analyses_local/output/tab_asoc_cont.tex")
-
+group_tt(j = dv_header) %>%
+theme_tt("resize", direction = "down") %>%
+save_tt("analyses_local/output/tab_asoc_cont.tex", overwrite = TRUE)
 
 ## Coefficient plots --------------------------------
 
