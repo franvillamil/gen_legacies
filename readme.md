@@ -36,5 +36,6 @@ Alternatively, the repository can be downloaded and run using `make` in macOS/Un
 ```
 git clone https://github.com/franvillamil/gen_legacies
 cd gen_legacies
+make clean
 make
 ```
