@@ -1,13 +1,13 @@
 # setwd("~/Documents/Projects/gen_legacies")
 options(stringsAsFactors = FALSE)
 # List of packages
-pkg = c("dplyr", "ggplot2", "rgdal", "rgeos", "sp", "classInt",
-  "paletteer", "maptools", "scales")
+pkg = c("dplyr", "ggplot2", "mapSpain", "sf")
+  # "paletteer", "maptools", "scales")
 # Checks if they are installed, install if not
 if (length(setdiff(pkg, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(pkg, rownames(installed.packages())))}
 # Load
-invisible(lapply(c(pkg, "muniSpain"), library, character.only = TRUE))
+invisible(lapply(pkg, library, character.only = TRUE))
 
 ## PREPS ------------------------------------
 
@@ -23,46 +23,58 @@ data = read.csv("dataset_local/output/data.csv")
 ## MAPS ------------------------------------
 
 # Load shapefile
-shp = readOGR("input/ESP_adm4_1960_2011.shp", layer = "ESP_adm4_1960_2011")
+shp = st_read("input/ESP_adm4_1960_2011.shp", "ESP_adm4_1960_2011")
 
-# Changing Canary Islands
-shpEA = spTransform(shp,CRS("+init=epsg:2163"))
-ci = shpEA[shpEA$NAME_2 %in% c("santa cruz de tenerife", "las palmas"),]
-ci = fix1(ci, c(-20.5,1,-2.5e05,2e06))
-proj4string(ci) = proj4string(shpEA)
-shpEA = shpEA[!shpEA$NAME_2 %in% c("santa cruz de tenerife", "las palmas"),]
-shpEA = rbind(shpEA, ci)
-shp2 = spTransform(shpEA, CRS("+init=epsg:4326"))
+# Moving the Canary Islands
+crs = st_crs(shp)
+shp_mainland = shp[!shp$NAME_2 %in% c("santa cruz de tenerife", "las palmas"),]
+shp_ci_raw = shp[shp$NAME_2 %in% c("santa cruz de tenerife", "las palmas"),]
+shp_ci = esp_move_can(shp_ci_raw, moveCAN = TRUE)
+shp = rbind(shp_mainland, shp_ci)
 
-# Get whole country and provinces
-c = gUnaryUnion(shp2)
-p = gUnaryUnion(shp2, id = shp2@data$NAME_2)
-
-# Mark provinces in sample
+# Add variables: in sample
 pt = table(data$prov, is.na(data$asoc_post75))
-data$insample = ifelse(data$prov %in% rownames(pt)[pt[,1] == 0], FALSE, TRUE)
-shp2$insample = data$insample[match(shp2$muni_code, data$muni_code)]
-shp2$insample[is.na(shp2$insample)] = FALSE
+data$insample = ifelse(data$prov %in% rownames(pt)[pt[,1] == 0],
+  FALSE, TRUE)
+shp$in_sample = data$insample[match(shp$muni_code, data$muni_code)]
+# Add variables: TOP
+shp$top_bin = data$top_bin[match(shp$muni_code, data$muni_code)]
 
-# Add variables
-shp2$top_bin = data$top_bin[match(shp2$muni_code, data$muni_code)]
-# colsc = c("white", "#5999ff", "#fa3232", "#541111")
-shp2$top_col = ifelse(shp2$top_bin == 0, "white", "#fa3232")
+# Get subdivisions et al
+ccaa = esp_get_ccaa()
+provs = esp_get_prov()
+box = esp_get_can_box()
+line = esp_get_can_provinces()
+
+# Get submaps for layers
+top = subset(shp, top_bin == 1)
+no_top = subset(shp, top_bin == 0)
+notinsample = subset(shp, !in_sample)
 
 # Plot
-pdf("desc_local/output/map_top_reduced.pdf", height = 10, width = 8)
-# Base map, grey borders
-plot(shp2, col = "grey", border = "grey", lwd = 0.25)
-# Municipalities in the sample
-plot(shp2[shp2$insample,], col = shp2$top_col[shp2$insample],
-    border = "grey", lwd = 0.25, add = TRUE)
-# Country profile (provinces)
-plot(p, border = grey(0.5), lwd = 0.5, add = TRUE)
-# Canary Islands box
-segments(x0 = -1.85, y0 = 34.7, y1 = 36, col = grey(0.5), lwd = 2, lty = "dashed")
-segments(x0 = -0.5, x1 = 3.8, y0 = 36.75, col = grey(0.5), lwd = 2, lty = "dashed")
-segments(x0 = -1.85, y0 = 36, x1 = -0.5, y1 = 36.75, col = grey(0.5), lwd = 2, lty = "dashed")
-dev.off()
+map = ggplot() +
+  geom_sf(data = top,
+    fill = "#fa3232", color = NA, linewidth = 0) +
+  geom_sf(data = no_top,
+    fill = "white", color = NA, linewidth = 0) +
+  geom_sf(data = shp, linewidth = 0.05,
+    color = "gray",  fill = NA)+
+  geom_sf(data = notinsample,
+    fill = "grey", color = "grey", size = 0.01)+
+  labs(x = "", y = "") +
+  geom_sf(data = provs,  
+    color = "gray50", fill = NA, linewidth = 0.2) +
+  geom_sf(data = box,  
+    color = "slategray", fill = NA, size = 0.7) +
+  theme_minimal() +
+  theme(panel.grid = element_blank(),
+    axis.line = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank())
+
+# Saving
+ggsave("desc_local/output/map_top_reduced.pdf", device = "pdf")
 
 # # find ./desc_local/output -name "map*" -exec pdfcrop {} {} \;
 # system2("pdfcrop", args = c(

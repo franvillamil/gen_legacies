@@ -1,4 +1,4 @@
-.PHONY: all taskflow
+.PHONY: all clean taskflow
 .DELETE_ON_ERROR:
 
 # ------------------------
@@ -11,7 +11,7 @@ out_desc = desc_local/desc.Rout
 # ------------------------
 # Main recipes
 
-all: $(out_data) $(out_desc) $(out_models) taskflow
+all: $(out_data) $(out_desc) $(out_models)
 
 taskflow:
 	Rscript --no-save --verbose taskflow/create_dependency_graph.R
@@ -47,20 +47,21 @@ asoc_agg/output/asoc_agg.csv: asoc_agg/agg.R input/asoc.csv
 # Descriptives
 
 $(out_desc): desc_local/desc.R func/misc.R dataset_local/output/data.csv input/ESP_adm4_1960_2011.shp input/asoc.csv
-	mkdir -p $(@D)
+	mkdir -p $(@D)/output
 	Rscript --no-save --verbose $< 2>&1 | tee $<out
+	find ./desc_local/output -name "map*" -exec pdfcrop {} {} \;
 
 # ------------------------
 # Analyses
 
 analyses_CIS/analyses.Rout: analyses_CIS/analyses.R func/misc.R func/sim.R dataset_CIS/output/data.csv
-	mkdir -p $(@D)
+	mkdir -p $(@D)/output
 	Rscript --no-save --verbose $< 2>&1 | tee $<out
 
 analyses_ESS/analyses.Rout: analyses_ESS/analyses.R func/misc.R func/sim.R dataset_ESS/output/data.rds
-	mkdir -p $(@D)
+	mkdir -p $(@D)/output
 	Rscript --no-save --verbose $< 2>&1 | tee $<out
 
 analyses_local/analyses.Rout: analyses_local/analyses.R func/misc.R dataset_local/output/data.csv
-	mkdir -p $(@D)
+	mkdir -p $(@D)/output
 	Rscript --no-save --verbose $< 2>&1 | tee $<out

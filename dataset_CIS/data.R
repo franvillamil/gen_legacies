@@ -53,4 +53,4 @@ data$ideog = ifelse(data$ideology %in% 4:6, "center", data$ideog)
 data$ideog = ifelse(data$ideology %in% 0:3, "left", data$ideog)
 
 ## SAVE
-write.csv(data, "dataset_CIS/output/dataset.csv", row.names = FALSE)
+write.csv(data, "dataset_CIS/output/data.csv", row.names = FALSE)

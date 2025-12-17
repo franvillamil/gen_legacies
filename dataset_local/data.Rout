@@ -1,0 +1,16 @@
+running
+  '/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/bin/R --no-echo --no-restore --no-save --file=dataset_local/data.R'
+
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Warning message:
+package ‘readstata13’ was built under R version 4.3.3 

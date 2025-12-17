@@ -1,0 +1,32 @@
+running
+  '/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/bin/R --no-echo --no-restore --no-save --file=analyses_CIS/analyses.R'
+
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘MASS’
+
+The following object is masked from ‘package:dplyr’:
+
+    select
+
+Warning messages:
+1: package ‘modelsummary’ was built under R version 4.3.3 
+2: package ‘ggplot2’ was built under R version 4.3.3 
+3: package ‘tinytable’ was built under R version 4.3.3 
+4: package ‘marginaleffects’ was built under R version 4.3.3 
+[1] "Factor interaction (expanded dummies) used. Cohort variable must be a binary factor (i.e. only one coefficient)."
+[1] "Factor interaction (expanded dummies) used. Cohort variable must be a binary factor (i.e. only one coefficient)."
+[1] "Factor interaction (expanded dummies) used. Cohort variable must be a binary factor (i.e. only one coefficient)."
+[1] "Factor interaction (expanded dummies) used. Cohort variable must be a binary factor (i.e. only one coefficient)."
+`summarise()` has grouped output by 'cohort'. You can override using the
+`.groups` argument.

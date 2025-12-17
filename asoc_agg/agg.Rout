@@ -1,0 +1,17 @@
+running
+  '/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/bin/R --no-echo --no-restore --no-save --file=asoc_agg/agg.R'
+
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+`summarise()` has grouped output by 'muni_code'. You can override using the
+`.groups` argument.
+Joining with `by = join_by(muni_code)`
