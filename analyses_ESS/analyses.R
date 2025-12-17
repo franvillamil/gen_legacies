@@ -11,7 +11,6 @@ if (length(setdiff(pkg, rownames(installed.packages()))) > 0) {
 invisible(lapply(pkg, library, character.only = TRUE))
 # Functions
 source("func/misc.R")
-source("func/sim.R")
 # ggplot defaults: geoms theme
 theme_set(my_theme())
 

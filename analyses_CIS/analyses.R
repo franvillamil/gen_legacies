@@ -12,6 +12,8 @@ invisible(lapply(pkg, library, character.only = TRUE))
 # Functions
 source("func/misc.R")
 source("func/sim.R")
+# Seed
+set.seed(23456798)
 
 ## PREPS ------------------------------------
 
