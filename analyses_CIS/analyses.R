@@ -688,3 +688,147 @@ p = ggplot(avg, aes(x = age, y = est,
     legend.position = "bottom") +
   scale_color_manual(values = cols)
 ggsave("analyses_CIS/output/fig_avg_ac.pdf", height = 5, width = 8)
+
+
+## ===================================================
+## GRAPHS in Spanish
+
+##### ----------
+
+coh_esp = coh %>%
+  filter(cohort != "90s") %>%
+  mutate(outcome = recode(outcome,
+    "All associations" = "Todas las asociaciones",
+    "Political associations" = "Asociaciones políticas")) %>%
+  mutate(cohort = paste0("19", gsub("s", "", cohort)))
+
+p = ggplot(coh_esp, aes(x = cohort, y = mean)) +
+  geom_errorbar(aes(ymin = lwr90, ymax = upr90), width = 0, linewidth = 1.1) +
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0) +
+  geom_point(fill = "white", shape = 21) +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  facet_wrap(~outcome, scales = "free_y") +
+  labs(x = "\nDécada de nacimiento",
+    y = "Probabilidad de participación\nen asociaciones\n") +
+  scale_y_continuous(labels = scales::percent)
+ggsave("analyses_CIS/output/ESP_fig_cohort.pdf",
+  height = 3, width = 7, device = "pdf")
+
+##### ----------
+##### Cuanto más participan los que nacen en o después de 1958
+
+sims_58_esp = sims_time58 %>%
+  # filter(grepl("Poli", outcome)) %>%
+  mutate(outcome = recode(outcome,
+    "All associations" = "Todas las asociaciones",
+    "Political associations" = "Asociaciones políticas")) %>%
+  mutate(
+    cohort = gsub("Born before ", "before", cohort)) %>%
+  mutate(
+    cohort = gsub("Born after ", "after", cohort)) %>%
+  group_by(time, outcome) %>%
+  summarize(
+    diff = mean[cohort=="before1958"] - mean[cohort=="after1958"]) %>%
+  mutate(diff = diff*100)
+
+st = "Valores positivos: los que nacen antes de 1958 participan más.\nValores negativos: los que nacen antes de 1958 participan menos."
+
+p = ggplot(sims_58_esp, aes(x = time, y = diff)) +
+  geom_line(alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_point(fill = "white", shape = 21) +
+  labs(x = "\nAño de encuestas",
+    y = "Diferencia en participación\n(en puntos porcentuales)",
+    subtitle = st) +
+  theme(
+    # plot.subtitle = element_text(size = 10),
+    legend.title = element_blank(),
+    legend.position = "bottom") +
+  scale_x_continuous(breaks = seq(1990, 2015, 5)) +
+  # scale_y_continuous(limits = c(-25, 25)) +
+  facet_wrap(~outcome)
+ggsave("analyses_CIS/output/ESP_fig_cohort1958base.pdf",
+  height = 4, width = 7, device = "pdf")
+
+sim_coh58_diff = lapply(seq(1, length(sim_coh58), by = 2),
+    function(i) {(sim_coh58[[i]] - sim_coh58[[i + 1]])*100})
+sim_coh58b_diff = lapply(seq(1, length(sim_coh58b), by = 2),
+    function(i) {(sim_coh58b[[i]] - sim_coh58b[[i + 1]])*100})
+
+sims_time58_diff = rbind(
+  data.frame(
+    outcome = "Todas las asociaciones",
+    mean = map_dbl(sim_coh58_diff, mean),
+    lwr = map_dbl(sim_coh58_diff, quantile, 0.025),
+    upr = map_dbl(sim_coh58_diff, quantile, 0.975),
+    lwr90 = map_dbl(sim_coh58_diff, quantile, 0.05),
+    upr90 = map_dbl(sim_coh58_diff, quantile, 0.95)),
+  data.frame(
+    outcome = "Asociaciones políticas",
+    mean = map_dbl(sim_coh58b_diff, mean),
+    lwr = map_dbl(sim_coh58b_diff, quantile, 0.025),
+    upr = map_dbl(sim_coh58b_diff, quantile, 0.975),
+    lwr90 = map_dbl(sim_coh58b_diff, quantile, 0.05),
+    upr90 = map_dbl(sim_coh58b_diff, quantile, 0.95)))
+sims_time58_diff$year = as.integer(gsub("cohort_bf1958(0|1)_year", "",
+    names(sim_coh58))[seq(1, length(sim_coh58), by = 2)])
+
+p = ggplot(sims_time58_diff, aes(x = year, y = mean)) +
+  # geom_line(alpha = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_errorbar(aes(ymin = lwr90, ymax = upr90),
+    width = 0, linewidth = 1.1) +
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0) +
+  geom_point(fill = "white", shape = 21) +
+  labs(x = "\nAño de encuestas",
+    y = "Diferencia en participación\n(en puntos porcentuales)",
+    subtitle = st) +
+  theme(
+    # plot.subtitle = element_text(size = 10),
+    legend.title = element_blank(),
+    legend.position = "bottom") +
+  scale_x_continuous(breaks = seq(1990, 2015, 5)) +
+  # scale_y_continuous(limits = c(-25, 25)) +
+  facet_wrap(~outcome)
+ggsave("analyses_CIS/output/ESP_fig_cohort1958.pdf",
+  height = 4, width = 7, device = "pdf")
+
+p = ggplot(age_sim %>% filter(grepl("Pol", outcome)),
+    aes(x = age, y = mean, color = y, group = y)) +
+  geom_line(alpha = 0.2, position = position_dodge(1/2)) +
+  geom_errorbar(aes(ymin = lwr90, ymax = upr90), width = 0, linewidth = 1.1,
+    position = position_dodge(1/2)) +
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0,
+    position = position_dodge(1/2)) +
+  geom_point(position = position_dodge(1/2), fill = "white", shape = 21) +
+  labs(x = "\nEdad en el momento de la encuesta", y = "Probabilidad de participación en\nasociaciones políticas\n",
+    # title = "Age effect in earliest vs latest surveys",
+    # subtitle = "Respondents 55+ significantly less likely to have participated in political associations\nas of early 1990s (~ pre-war generation vs baby boomers)",
+    color = "Año de las encuestas") +
+  theme(
+    #plot.subtitle = element_text(size = 10),
+    legend.position = "bottom") +
+  scale_x_continuous(breaks = seq(20, 80, 10)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_paletteer_d(`"yarrr::google"`)
+ggsave("analyses_CIS/output/ESP_fig_funcform_age_pol.pdf",
+  height = 3.5, width = 6, device = "pdf")
+
+p = ggplot(avg %>% filter(grepl("^Pol", dv)),
+    aes(x = age, y = est,
+    group = cohortlab, color = cohortlab)) +
+  geom_line() +
+  geom_point(fill = "white") +
+  labs(x = "\nEdad",
+    y = "Participación media\nen asociaciones políticas\n",
+    color = "Generación\n(lustro de\nnacimiento)",
+    # title = "Cohort-age trajectories",
+    subtitle = "En colores fríos, generaciones que se hacen adultas durante el franquismo.\nEn colores cálidos, generaciones que se hacen adultas después.") +
+  theme(
+    plot.subtitle = element_text(size = 8),
+    legend.position = "bottom") +
+  scale_color_manual(values = cols) +
+  scale_x_continuous(breaks = seq(20,90,10)) +
+  scale_y_continuous(labels = scales::percent)
+ggsave("analyses_CIS/output/ESP_fig_avg_ac.pdf",
+  height = 5, width = 6)
