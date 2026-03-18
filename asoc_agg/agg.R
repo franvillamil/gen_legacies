@@ -23,6 +23,7 @@ asoc = read.csv("input/asoc.csv") %>%
   mutate(date = as.Date(date)) %>%
   mutate(year = as.integer(format(date, "%Y"))) %>%
   # Muni adaptations like rest of dataset (TOP period to today)
+  mutate(muni_code = sprintf("%05d", as.integer(muni_code))) %>%
   mutate(muni_code = changes_newcode(muni_code, "1960", "2011")) %>%
   filter(!is.na(muni_code))
 
