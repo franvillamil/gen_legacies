@@ -16,7 +16,7 @@ Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE
 Warning message:
 package ‘ggplot2’ was built under R version 4.3.3 
 Reading layer `ESP_adm4_1960_2011' from data source 
-  `/Users/franvillamil/Documents/Projects/gen_legacies/input/ESP_adm4_1960_2011.shp' 
+  `/Users/franvillamil/Desktop/gen_legacies/input/ESP_adm4_1960_2011.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 8005 features and 4 fields
 Geometry type: MULTIPOLYGON

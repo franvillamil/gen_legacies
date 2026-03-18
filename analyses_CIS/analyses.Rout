@@ -30,3 +30,5 @@ Warning messages:
 [1] "Factor interaction (expanded dummies) used. Cohort variable must be a binary factor (i.e. only one coefficient)."
 `summarise()` has grouped output by 'cohort'. You can override using the
 `.groups` argument.
+`summarise()` has grouped output by 'time'. You can override using the
+`.groups` argument.

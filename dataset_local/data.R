@@ -1,5 +1,4 @@
 # setwd("~/Documents/Projects/gen_legacies")
-options(stringsAsFactors = FALSE)
 # List of packages
 pkg = c("dplyr", "stringr", "readstata13", "tidyr", "readxl")
 # Checks if they are installed, install if not
@@ -19,7 +18,7 @@ NA_to_0 = function(v){v[is.na(v)] = 0; return(v)}
 
 ## Base dataset: 2011 census
 data = read.csv("input/INE_census.csv") %>%
-  mutate(muni_code0 = sprintf("%05d", as.integer(muni_code)) %>%
+  mutate(muni_code0 = sprintf("%05d", as.integer(muni_code))) %>%
   mutate(muni_code = changes_newcode(muni_code0, "1960", "2011")) %>%
   filter(!is.na(muni_code)) %>%
   group_by(muni_code) %>%

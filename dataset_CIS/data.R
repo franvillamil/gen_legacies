@@ -1,5 +1,4 @@
 # setwd("~/Documents/Projects/gen_legacies")
-options(stringsAsFactors = FALSE)
 # List of packages
 pkg = c("dplyr", "ggplot2", "stringr")
 # Checks if they are installed, install if not

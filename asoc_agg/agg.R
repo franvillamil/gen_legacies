@@ -1,5 +1,4 @@
 # setwd("~/Documents/Projects/gen_legacies")
-options(stringsAsFactors = FALSE)
 # List of packages
 pkg = c("tidyr", "dplyr", "stringr")
 # muniSpain

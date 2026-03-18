@@ -1,5 +1,4 @@
 # setwd("~/Documents/Projects/gen_legacies")
-options(stringsAsFactors = FALSE)
 options("modelsummary_format_numeric_latex" = "plain")
 # List of packages
 pkg = c("dplyr", "modelsummary", "ggplot2", "tinytable", "paletteer",
