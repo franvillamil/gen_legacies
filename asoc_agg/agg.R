@@ -41,7 +41,7 @@ asoc_agg = asoc %>%
   rowwise() %>%
   mutate(asoc_post75 = sum(c_across(starts_with("asoc")))) %>%
   ungroup() %>%
-  select(order(colnames(.)))
+  dplyr::select(order(colnames(.)))
 
 # Associations 1966-1975
 asoc_66_75 = asoc %>%

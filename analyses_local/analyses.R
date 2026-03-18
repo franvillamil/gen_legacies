@@ -125,7 +125,7 @@ coefs_asoc = bind_rows(
   mutate(dv = rep(gsub("(19|20)(\\d\\d)-", "\\1\\2\n\\1", dv_label), 2)) %>%
   mutate(dv = gsub("1900", "2000", dv)) %>%
   filter(dv != "Full") %>%
-  select(dv, term, est = estimate, se = std.error) %>%
+  dplyr::select(dv, term, est = estimate, se = std.error) %>%
   mutate(
     upr = est + se * qnorm(0.975),
     lwr = est - se * qnorm(0.975),

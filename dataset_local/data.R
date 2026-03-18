@@ -19,8 +19,8 @@ NA_to_0 = function(v){v[is.na(v)] = 0; return(v)}
 
 ## Base dataset: 2011 census
 data = read.csv("input/INE_census.csv") %>%
-  rename(muni_code_raw = muni_code) %>%
-  mutate(muni_code = changes_newcode(muni_code_raw, "1960", "2011")) %>%
+  mutate(muni_code0 = sprintf("%05d", as.integer(muni_code)) %>%
+  mutate(muni_code = changes_newcode(muni_code0, "1960", "2011")) %>%
   filter(!is.na(muni_code)) %>%
   group_by(muni_code) %>%
   summarize(
@@ -44,7 +44,7 @@ as.data.frame
 
 ## Add variables from TOP
 top = read.csv("input/aggregated_TOP.csv") %>%
-  mutate(muni_code = sprintf("%05s", muni_code))
+  mutate(muni_code = sprintf("%05d", as.integer(muni_code)))
 if(!all(top$muni_code %in% data$muni_code)){stop("!?")}
 data = merge(data, top, all.x = TRUE) %>%
   mutate(across(starts_with("top"), ~replace_na(., 0))) %>%
@@ -66,8 +66,9 @@ data = merge(data, top, all.x = TRUE) %>%
 
 ## Replication data from Drelichman, Vidal-Robert & Voth 2021
 dvv = read.dta13("input/Inquisition_analysis_dataset.dta", convert.factors = F) %>%
-  mutate(muni_code_raw = sprintf("%05s", preferred_inecode)) %>%
-  mutate(muni_code = changes_newcode(muni_code_raw, "1960", "2011")) %>%
+  mutate(muni_code0 = sprintf("%05d",
+    as.integer(preferred_inecode))) %>%
+  mutate(muni_code = changes_newcode(muni_code0, "1960", "2011")) %>%
   filter(!is.na(muni_code)) %>%
   mutate(c_secondplus_count = c_secondplus * pop_padron) %>%
   group_by(muni_code) %>%
@@ -83,23 +84,23 @@ data = merge(data, dvv, all.x = TRUE)
 
 ## GIS data
 gis = read.csv("input/elev_sd_1960_2011.csv") %>%
-  mutate(muni_code = sprintf("%05s", muni_code)) %>%
-  select(muni_code, elev_sd)
+  mutate(muni_code = sprintf("%05d", as.integer(muni_code))) %>%
+  dplyr::select(muni_code, elev_sd)
 # Check & merge
 if(!all(gis$muni_code %in% data$muni_code)){stop("!?")}
 data = merge(data, gis, all.x = TRUE)
 
 ## Distance to province capital
 distcap = read.csv("input/distcap.csv") %>%
-  mutate(muni_code = sprintf("%05s", muni_code)) %>%
-  select(muni_code, dist_prov_cap)
+  mutate(muni_code = sprintf("%05d", as.integer(muni_code))) %>%
+  dplyr::select(muni_code, dist_prov_cap)
 # Check & merge
 if(!all(distcap$muni_code %in% data$muni_code)){stop("!?")}
 data = merge(data, distcap, all.x = TRUE)
 
 ## Asociaciones
 asoc = read.csv("asoc_agg/output/asoc_agg.csv") %>%
-  mutate(muni_code = sprintf("%05s", muni_code)) %>%
+  mutate(muni_code = sprintf("%05d", as.integer(muni_code))) %>%
   # 5-year periods
   rowwise() %>%
   mutate(

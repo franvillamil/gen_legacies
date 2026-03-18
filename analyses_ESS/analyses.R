@@ -19,7 +19,7 @@ theme_set(my_theme())
 
 data = readRDS("dataset_ESS/output/data.rds")
 
-# Limit to countries with at least 15000 observations
+# Limit to countries with at least X observations
 ct = table(data$countryname)[order(ct = table(data$countryname), decreasing = TRUE)]
 # data = subset(data, countryname %in% names(ct)[1:10])
 data = subset(data, countryname %in% names(ct[ct > 20000]))
@@ -69,7 +69,7 @@ p = ggplot(coh58, aes(x = year, y = est, color = sig95, group = 1)) +
   facet_wrap(~country, scales = "free", ncol = 4) +
   scale_color_manual(values = c("gray75", "black")) +
   labs(x = "Survey round (ESS rounds)",
-    y = "Effect of being born before 1958 on participation in trade unions") +
+    y = "Effect of being born before 1958 on\nparticipation in trade unions") +
   theme(legend.position = "none")
 ggsave("analyses_ESS/output/cutoff58_over_time.pdf",
   width = 10, height = 4)

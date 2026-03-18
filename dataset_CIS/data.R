@@ -16,7 +16,7 @@ data = read.csv("input/encuestas_CIS.csv") %>%
 # Get local population, merge with data
 census = read.csv("input/INE_census.csv") %>%
   mutate(muni_code = sprintf("%05d", as.integer(muni_code))) %>%
-  select(muni_code, pop1970 = c1970, pop1960 = c1960)
+  dplyr::select(muni_code, pop1970 = c1970, pop1960 = c1960)
 data = merge(data, census, all.x = TRUE)
 
 # Get cohort variables

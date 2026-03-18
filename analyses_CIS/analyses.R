@@ -1,5 +1,4 @@
 # setwd("~/Documents/Projects/gen_legacies")
-options(stringsAsFactors = FALSE)
 options("modelsummary_format_numeric_latex" = "plain")
 # List of packages
 pkg = c("dplyr", "modelsummary", "ggplot2", "tinytable", "tidyr",
@@ -26,10 +25,11 @@ data$cohort20 = factor(data$cohort20)
 data$cohort_bf1965 = factor(data$cohort_bf1965)
 data$cohort_bf1958 = factor(data$cohort_bf1958)
 # Years (for time-varying models)
+if(class(data$year) != "integer"){stop("change year to int")}
 data$year5 = data$year - (data$year %% 5)
 data$year10 = data$year - (data$year %% 10)
-data$year5[data$year == "1989"] = "1990"
-data$year10[data$year == "1989"] = "1990"
+data$year5[data$year == 1989] = 1990
+data$year10[data$year == 1989] = 1990
 data$year5 = factor(data$year5)
 data$year10 = factor(data$year10)
 data$yearn = data$year
@@ -101,9 +101,11 @@ preds_coh_byyear = bind_rows(
   dplyr::select(dv, birthy, est = estimate, upr = conf.high, lwr = conf.low)
 
 preds_coh_byyear90 = bind_rows(
-    predictions(m_cohort_byyear[[1]], by = "birthy", conf_level = 0.9) %>%
+    predictions(m_cohort_byyear[[1]],
+        by = "birthy", conf_level = 0.9) %>%
       mutate(dv = "All associations"),
-    predictions(m_cohort_byyear[[2]], by = "birthy", conf_level = 0.9) %>%
+    predictions(m_cohort_byyear[[2]],
+        by = "birthy", conf_level = 0.9) %>%
       mutate(dv = "Political associations")) %>%
   dplyr::select(dv, birthy, upr90 = conf.high, lwr90 = conf.low)
 

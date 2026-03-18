@@ -65,7 +65,7 @@ data = dataraw %>%
   mutate(polinterest = ifelse(polintr %in% 1:4, 5 - polintr, NA)) %>%
   # Trust
   mutate(trust_polit = ifelse(trstplt %in% 0:10, trstplt, NA)) %>%
-  mutate(trust_parties = ifelse(trstprt %in% 0:10, trstplt, NA)) %>%
+  mutate(trust_parties = ifelse(trstprt %in% 0:10, trstprt, NA)) %>%
   # Born in country
   mutate(born_ctry = ifelse(brncntr == 1, 1, 0)) %>%
   mutate(born_ctry = ifelse(brncntr %in% 7:9, NA, born_ctry)) %>%
